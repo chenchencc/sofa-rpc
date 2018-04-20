@@ -147,7 +147,7 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
                 }
             }
             // 将处理器注册到server
-            List<ServerConfig> serverConfigs = providerConfig.getServer();
+            List<ServerConfig> serverConfigs = providerConfig.getServer();//获取server
             for (ServerConfig serverConfig : serverConfigs) {
                 try {
                     Server server = serverConfig.buildIfAbsent();
