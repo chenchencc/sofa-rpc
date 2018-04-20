@@ -103,6 +103,7 @@ public class ExtensionClass<T> implements Sortable {
                     if (instance == null) {
                         synchronized (this) {
                             if (instance == null) {
+                                //根据参数类型，参数，目标字节码创建一个instance
                                 instance = ClassUtils.newInstanceWithArgs(clazz, argTypes, args);
                             }
                         }

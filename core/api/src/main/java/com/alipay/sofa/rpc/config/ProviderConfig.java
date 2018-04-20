@@ -406,7 +406,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
 
     /**
      * Gets repeated export limit.
-     *
+     * 获取重复暴露的限制
      * @return the repeated export limit
      */
     public int getRepeatedExportLimit() {
@@ -520,7 +520,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
      */
     public synchronized void export() {
         if (providerBootstrap == null) {
-            providerBootstrap = Bootstraps.from(this);
+            providerBootstrap = Bootstraps.from(this);//根据provider配置创建一个ProviderBootstrap实例
         }
         providerBootstrap.export();
     }

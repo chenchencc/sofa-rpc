@@ -39,7 +39,7 @@ public class ExtensionLoaderFactory {
      * @return ExtensionLoader of this class
      */
     public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> clazz, ExtensionLoaderListener<T> listener) {
-        ExtensionLoader<T> loader = LOADER_MAP.get(clazz);
+        ExtensionLoader<T> loader = LOADER_MAP.get(clazz);//
         if (loader == null) {
             synchronized (ExtensionLoaderFactory.class) {
                 loader = LOADER_MAP.get(clazz);

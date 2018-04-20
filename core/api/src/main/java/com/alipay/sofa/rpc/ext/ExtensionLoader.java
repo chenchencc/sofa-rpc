@@ -122,9 +122,9 @@ public class ExtensionLoader<T> {
             throw new IllegalArgumentException("Extensible class must be interface or abstract class!");
         }
         this.interfaceClass = interfaceClass;
-        this.interfaceName = ClassTypeUtils.getTypeStr(interfaceClass);
-        this.listener = listener;
-        Extensible extensible = interfaceClass.getAnnotation(Extensible.class);
+        this.interfaceName = ClassTypeUtils.getTypeStr(interfaceClass);//将类名转换成可以class.forName的格式
+        this.listener = listener;//extensionloader listener可能为空
+        Extensible extensible = interfaceClass.getAnnotation(Extensible.class);//判断这个接口是否有@Extensible注解
         if (extensible == null) {
             throw new IllegalArgumentException(
                 "Error when load extensible interface " + interfaceName + ", must add annotation @Extensible.");
@@ -133,11 +133,11 @@ public class ExtensionLoader<T> {
         }
 
         this.factory = extensible.singleton() ? new ConcurrentHashMap<String, T>() : null;
-        this.all = new ConcurrentHashMap<String, ExtensionClass<T>>();
+        this.all = new ConcurrentHashMap<String, ExtensionClass<T>>();//@extension注解接口对应的实现类
         if (autoLoad) {
-            List<String> paths = RpcConfigs.getListValue(RpcOptions.EXTENSION_LOAD_PATH);
+            List<String> paths = RpcConfigs.getListValue(RpcOptions.EXTENSION_LOAD_PATH);//
             for (String path : paths) {
-                loadFromFile(path);
+                loadFromFile(path);//从文件中获取实现类
             }
         }
     }
@@ -151,7 +151,7 @@ public class ExtensionLoader<T> {
         }
         // 默认如果不指定文件名字，就是接口名
         String file = StringUtils.isBlank(extensible.file()) ? interfaceName : extensible.file().trim();
-        String fullFileName = path + file;
+        String fullFileName = path + file;//拼写类的全路径民
         try {
             ClassLoader classLoader = ClassLoaderUtils.getClassLoader(getClass());
             loadFromClassLoader(classLoader, fullFileName);
@@ -163,6 +163,12 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 通过类加载器和类全路径名加载它
+     * @param classLoader
+     * @param fullFileName
+     * @throws Throwable
+     */
     protected void loadFromClassLoader(ClassLoader classLoader, String fullFileName) throws Throwable {
         Enumeration<URL> urls = classLoader != null ? classLoader.getResources(fullFileName)
             : ClassLoader.getSystemResources(fullFileName);
@@ -180,7 +186,7 @@ public class ExtensionLoader<T> {
                     reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        readLine(url, line);
+                        readLine(url, line);//读取一行
                     }
                 } catch (Throwable t) {
                     if (LOGGER.isWarnEnabled()) {
@@ -201,12 +207,12 @@ public class ExtensionLoader<T> {
         if (aliasAndClassName == null || aliasAndClassName.length != 2) {
             return;
         }
-        String alias = aliasAndClassName[0];
-        String className = aliasAndClassName[1];
+        String alias = aliasAndClassName[0];//别名
+        String className = aliasAndClassName[1];//类全路径名
         // 读取配置的实现类
         Class tmp;
         try {
-            tmp = ClassUtils.forName(className, false);
+            tmp = ClassUtils.forName(className, false);//class for class name
         } catch (Throwable e) {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("Extension {} of extensible {} is disabled, cause by: {}",
@@ -221,12 +227,12 @@ public class ExtensionLoader<T> {
         Class<? extends T> implClass = (Class<? extends T>) tmp;
 
         // 检查是否有可扩展标识
-        Extension extension = implClass.getAnnotation(Extension.class);
+        Extension extension = implClass.getAnnotation(Extension.class);//被@Extensible修饰的接口的实现类必须有@Extension注解
         if (extension == null) {
             throw new IllegalArgumentException("Error when load extension of extensible " + interfaceName +
                 " from file:" + url + ", " + className + " must add annotation @Extension.");
         } else {
-            String aliasInCode = extension.value();
+            String aliasInCode = extension.value();//获取别名
             if (StringUtils.isBlank(aliasInCode)) {
                 // 扩展实现类未配置@Extension 标签
                 throw new IllegalArgumentException("Error when load extension of extensible " + interfaceClass +
@@ -292,6 +298,7 @@ public class ExtensionLoader<T> {
                 }
             }
         } else {
+            //构建一个ExtensionClass实例
             extensionClass = buildClass(extension, implClass, alias);
         }
         if (extensionClass != null) {
@@ -335,6 +342,13 @@ public class ExtensionLoader<T> {
         }
     }
 
+    /**
+     * 利用别名、实现类字节码、@Extension注解信息构建一个ExtensionClass实例
+     * @param extension
+     * @param implClass
+     * @param alias
+     * @return
+     */
     private ExtensionClass<T> buildClass(Extension extension, Class<? extends T> implClass, String alias) {
         ExtensionClass<T> extensionClass = new ExtensionClass<T>(implClass, alias);
         extensionClass.setCode(extension.code());
@@ -345,13 +359,19 @@ public class ExtensionLoader<T> {
         return extensionClass;
     }
 
+    //加载完毕之后，会通过listener去通知
     private void loadSuccess(String alias, ExtensionClass<T> extensionClass) {
-        all.put(alias, extensionClass);
+        all.put(alias, extensionClass);//将别名和实例保存起来
         if (listener != null) {
             listener.onLoad(extensionClass); // 加载完毕，通知监听器
         }
     }
 
+    /**
+     * 解析别名和类名
+     * @param line
+     * @return
+     */
     protected String[] parseAliasAndClassName(String line) {
         if (StringUtils.isBlank(line)) {
             return null;

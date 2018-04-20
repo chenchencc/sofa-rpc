@@ -77,7 +77,7 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
      */
     protected final ConcurrentHashMap<String, AtomicInteger> EXPORTED_KEYS = new ConcurrentHashMap<String, AtomicInteger>();
 
-    @Override
+    @Override   //暴露服务
     public void export() {
         if (providerConfig.getDelay() > 0) { // 延迟加载,单位毫秒
             Thread thread = new Thread(new Runnable() {
@@ -102,7 +102,7 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
         if (exported) {
             return;
         }
-        String key = providerConfig.buildKey();
+        String key = providerConfig.buildKey();//interface+uniqueId
         String appName = providerConfig.getAppName();
         // 检查参数
         checkParameters();
@@ -139,7 +139,7 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
             providerProxyInvoker = new ProviderProxyInvoker(providerConfig);
             // 初始化注册中心
             if (providerConfig.isRegister()) {
-                List<RegistryConfig> registryConfigs = providerConfig.getRegistry();
+                List<RegistryConfig> registryConfigs = providerConfig.getRegistry();//获取注册中心配置
                 if (CommonUtils.isNotEmpty(registryConfigs)) {
                     for (RegistryConfig registryConfig : registryConfigs) {
                         RegistryFactory.getRegistry(registryConfig); // 提前初始化Registry
@@ -188,7 +188,7 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
         // 检查注入的ref是否接口实现类
         Class proxyClass = providerConfig.getProxyClass();
         String key = providerConfig.buildKey();
-        T ref = providerConfig.getRef();
+        T ref = providerConfig.getRef();//接口的实现类
         if (!proxyClass.isInstance(ref)) {
             throw ExceptionUtils.buildRuntime("provider.ref",
                 ref == null ? "null" : ref.getClass().getName(),
