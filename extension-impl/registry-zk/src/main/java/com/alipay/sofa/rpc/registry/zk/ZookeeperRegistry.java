@@ -178,15 +178,15 @@ public class ZookeeperRegistry extends Registry {
             address = addressInput;
             rootPath = CONTEXT_SEP;
         }
-        preferLocalFile = !CommonUtils.isFalse(registryConfig.getParameter(PARAM_PREFER_LOCAL_FILE));
-        ephemeralNode = !CommonUtils.isFalse(registryConfig.getParameter(PARAM_CREATE_EPHEMERAL));
+        preferLocalFile = !CommonUtils.isFalse(registryConfig.getParameter(PARAM_PREFER_LOCAL_FILE));//是否执行本地文件
+        ephemeralNode = !CommonUtils.isFalse(registryConfig.getParameter(PARAM_CREATE_EPHEMERAL));//是否是临时节点
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info(
                 "Init ZookeeperRegistry with address {}, root path is {}. preferLocalFile:{}, ephemeralNode:{}",
                 address, rootPath, preferLocalFile, ephemeralNode);
         }
-        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
-        zkClient = CuratorFrameworkFactory.builder()
+        RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);//重试策略针对ZK的
+        zkClient = CuratorFrameworkFactory.builder()//创建一个ZK客户端
             .connectString(address)
             .sessionTimeoutMs(registryConfig.getConnectTimeout() * 3)
             .connectionTimeoutMs(registryConfig.getConnectTimeout())
@@ -196,7 +196,7 @@ public class ZookeeperRegistry extends Registry {
             .build();
     }
 
-    @Override
+    @Override //真正启动ZK Client的地方
     public synchronized boolean start() {
         if (zkClient == null) {
             LOGGER.warn("Start zookeeper registry must be do init first!");
@@ -206,7 +206,7 @@ public class ZookeeperRegistry extends Registry {
             return true;
         }
         try {
-            zkClient.start();
+            zkClient.start();//创建ZK的链接
         } catch (Exception e) {
             throw new SofaRpcRuntimeException("Failed to start zookeeper zkClient", e);
         }
@@ -232,7 +232,7 @@ public class ZookeeperRegistry extends Registry {
      * 例如：{/sofa-rpc/com.alipay.sofa.rpc.example/configs ： PathChildrenCache }
      */
     private static final ConcurrentHashMap<String, PathChildrenCache> INTERFACE_CONFIG_CACHE = new ConcurrentHashMap<String, PathChildrenCache>();
-
+    //注册服务
     @Override
     public void register(ProviderConfig config) {
         String appName = config.getAppName();
@@ -245,17 +245,17 @@ public class ZookeeperRegistry extends Registry {
         if (config.isRegister()) {
             // 注册服务端节点
             try {
-                List<String> urls = ZookeeperRegistryHelper.convertProviderToUrls(config);
+                List<String> urls = ZookeeperRegistryHelper.convertProviderToUrls(config);//将ProviderConfig转换成URL
                 if (CommonUtils.isNotEmpty(urls)) {
-                    String providerPath = buildProviderPath(rootPath, config);
+                    String providerPath = buildProviderPath(rootPath, config);// Provider path=rootPath+"sofa-rpc/"+interface+"/providers" 服务提供者的目录
                     if (LOGGER.isInfoEnabled(appName)) {
                         LOGGER.infoWithApp(appName,
                             LogCodes.getLog(LogCodes.INFO_ROUTE_REGISTRY_PUB_START, providerPath));
                     }
                     for (String url : urls) {
-                        url = URLEncoder.encode(url, "UTF-8");
-                        String providerUrl = providerPath + CONTEXT_SEP + url;
-                        getAndCheckZkClient().create().creatingParentContainersIfNeeded()
+                        url = URLEncoder.encode(url, "UTF-8");//将URL按照UTF-8进行编码 URL=bolt%3A%2F%2F172.18.141.94%3A22101%3FuniqueId%3D%26version%3D1.0%26timeout%3D0%26delay%3D-1%26id%3Drpc-cfg-0%26dynamic%3Dtrue%26weight%3D100%26accepts%3D100000%26startTime%3D1524483445201%26pid%3D51536%26language%3Djava%26rpcVer%3D50301
+                        String providerUrl = providerPath + CONTEXT_SEP + url;///sofa-rpc/com.alipay.sofa.rpc.test.HelloService/providers/bolt%3A%2F%2F172.18.141.94%3A22101%3FuniqueId%3D%26version%3D1.0%26timeout%3D0%26delay%3D-1%26id%3Drpc-cfg-0%26dynamic%3Dtrue%26weight%3D100%26accepts%3D100000%26startTime%3D1524483445201%26pid%3D51536%26language%3Djava%26rpcVer%3D50301
+                        getAndCheckZkClient().create().creatingParentContainersIfNeeded()//在ZK中写入该节点
                             .withMode(ephemeralNode ? CreateMode.EPHEMERAL : CreateMode.PERSISTENT) // 是否永久节点
                             .forPath(providerUrl, config.isDynamic() ? PROVIDER_ONLINE : PROVIDER_OFFLINE); // 是否默认上下线
                         if (LOGGER.isInfoEnabled(appName)) {
@@ -272,21 +272,21 @@ public class ZookeeperRegistry extends Registry {
             }
         }
 
-        if (config.isSubscribe()) {
+        if (config.isSubscribe()) {//是否订阅
             // 订阅配置节点
-            ConfigListener listener = config.getConfigListener();
-            String configPath = buildConfigPath(rootPath, config);
+            ConfigListener listener = config.getConfigListener();//Provider Config的监听器
+            String configPath = buildConfigPath(rootPath, config);//创建Provider Config的path=rootPath + "sofa-rpc/" + config.getInterfaceId() + "/configs";
             if (!INTERFACE_CONFIG_CACHE.containsKey(configPath)) {
-                subscribeConfig(config, listener);
+                subscribeConfig(config, listener);//订阅配置
             }
         }
     }
-
+    //在ZK中的config路径上添加监听器
     protected void subscribeConfig(final AbstractInterfaceConfig config, ConfigListener listener) {
-        String configPath = buildConfigPath(rootPath, config);
+        String configPath = buildConfigPath(rootPath, config);//rootPath + "sofa-rpc/" + config.getInterfaceId() + "/configs
         try {
             if (configObserver == null) { // 初始化
-                configObserver = new ZookeeperConfigObserver();
+                configObserver = new ZookeeperConfigObserver();//ZK中的config node的观察器，当config节点发生变化
             }
             configObserver.addConfigListener(config, listener);
             // 监听配置节点下 子节点增加、子节点删除、子节点Data修改事件
@@ -372,6 +372,7 @@ public class ZookeeperRegistry extends Registry {
         }
     }
 
+    //订阅数据
     @Override
     public List<ProviderGroup> subscribe(final ConsumerConfig config) {
         String appName = config.getAppName();
@@ -388,7 +389,7 @@ public class ZookeeperRegistry extends Registry {
                 String consumerPath = buildConsumerPath(rootPath, config);
                 String url = ZookeeperRegistryHelper.convertConsumerToUrl(config);
                 url = URLEncoder.encode(url, "UTF-8");
-                getAndCheckZkClient().create().creatingParentContainersIfNeeded()
+                getAndCheckZkClient().create().creatingParentContainersIfNeeded()//将消费者数据写入到consumers目录下
                     .withMode(CreateMode.EPHEMERAL) // Consumer临时节点
                     .forPath(consumerPath + CONTEXT_SEP + url);
             } catch (Exception e) {
@@ -402,7 +403,7 @@ public class ZookeeperRegistry extends Registry {
                 subscribeConfig(config, config.getConfigListener());
             }
 
-            // 订阅Providers节点
+            // 订阅Providers节点，获取关注的服务列表
             try {
                 if (providerObserver == null) { // 初始化
                     providerObserver = new ZookeeperProviderObserver();
@@ -440,7 +441,7 @@ public class ZookeeperRegistry extends Registry {
                 });
                 pathChildrenCache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
                 List<ProviderInfo> providerInfos = ZookeeperRegistryHelper.convertUrlsToProviders(
-                    providerPath, pathChildrenCache.getCurrentData());
+                    providerPath, pathChildrenCache.getCurrentData());//获取Provider目录下的服务提供者缓存数据
                 List<ProviderInfo> matchProviders = ZookeeperRegistryHelper.matchProviderInfos(config, providerInfos);
                 return Collections.singletonList(new ProviderGroup().addAll(matchProviders));
             } catch (Exception e) {

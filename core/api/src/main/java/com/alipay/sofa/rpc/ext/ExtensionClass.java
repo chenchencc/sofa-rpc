@@ -86,7 +86,7 @@ public class ExtensionClass<T> implements Sortable {
      * @return 扩展点对象实例
      */
     public T getExtInstance() {
-        return getExtInstance(null, null);
+        return getExtInstance(null, null);//反射调用无参的构造器
     }
 
     /**

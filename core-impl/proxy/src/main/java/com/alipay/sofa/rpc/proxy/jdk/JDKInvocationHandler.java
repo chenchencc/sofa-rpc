@@ -58,8 +58,8 @@ public class JDKInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] paramValues)
         throws Throwable {
-        String methodName = method.getName();
-        Class[] paramTypes = method.getParameterTypes();
+        String methodName = method.getName();//方法名
+        Class[] paramTypes = method.getParameterTypes();//方法参数类型
         if ("toString".equals(methodName) && paramTypes.length == 0) {
             return proxyInvoker.toString();
         } else if ("hashCode".equals(methodName) && paramTypes.length == 0) {
@@ -68,10 +68,10 @@ public class JDKInvocationHandler implements InvocationHandler {
             Object another = paramValues[0];
             return proxy == another ||
                 (proxy.getClass().isInstance(another) && proxyInvoker.equals(JDKProxy.parseInvoker(another)));
-        }
+        }//不是Java Object的方法，则创建一个SofaRequest
         SofaRequest sofaRequest = MessageBuilder.buildSofaRequest(method.getDeclaringClass(),
             method, paramTypes, paramValues);
-        SofaResponse response = proxyInvoker.invoke(sofaRequest);
+        SofaResponse response = proxyInvoker.invoke(sofaRequest);//发生远程调用的地方
         if (response.isError()) {
             throw new SofaRpcException(RpcErrorType.SERVER_UNDECLARED_ERROR, response.getErrorMsg());
         }

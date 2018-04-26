@@ -80,10 +80,10 @@ public class BoltServer implements Server {
     public void init(ServerConfig serverConfig) {
         this.serverConfig = serverConfig;
         // 启动线程池
-        bizThreadPool = initThreadPool(serverConfig);
-        boltServerProcessor = new BoltServerProcessor(this);
+        bizThreadPool = initThreadPool(serverConfig);//ceate the thead pool by the server config
+        boltServerProcessor = new BoltServerProcessor(this);//create the server instance 
     }
-
+    //初始化线程池
     protected ThreadPoolExecutor initThreadPool(ServerConfig serverConfig) {
         ThreadPoolExecutor threadPool = BusinessPool.initPool(serverConfig);
         threadPool.setThreadFactory(new NamedThreadFactory(
@@ -94,7 +94,7 @@ public class BoltServer implements Server {
         }
         return threadPool;
     }
-
+    //Server的start负责创建并开启server
     @Override
     public void start() {
         if (started) {
@@ -107,7 +107,7 @@ public class BoltServer implements Server {
             // 生成Server对象
             remotingServer = initRemotingServer();
             try {
-                if (!remotingServer.start(serverConfig.getBoundHost())) {
+                if (!remotingServer.start(serverConfig.getBoundHost())) {//创建netty server并开启
                     throw new SofaRpcRuntimeException("Failed to start bolt server, see more detail from bolt log.");
                 }
                 started = true;
@@ -121,8 +121,8 @@ public class BoltServer implements Server {
 
     protected RemotingServer initRemotingServer() {
         // 绑定到端口
-        RemotingServer remotingServer = new RpcServer(serverConfig.getPort());
-        remotingServer.registerUserProcessor(boltServerProcessor);
+        RemotingServer remotingServer = new RpcServer(serverConfig.getPort());//创建一个RPC Server
+        remotingServer.registerUserProcessor(boltServerProcessor);//注册request处理器
         return remotingServer;
     }
 
@@ -153,8 +153,8 @@ public class BoltServer implements Server {
     @Override
     public void registerProcessor(ProviderConfig providerConfig, Invoker instance) {
         // 缓存Invoker对象
-        String key = ConfigUniqueNameGenerator.getUniqueName(providerConfig);
-        invokerMap.put(key, instance);
+        String key = ConfigUniqueNameGenerator.getUniqueName(providerConfig);//默认是interface+version
+        invokerMap.put(key, instance);//与Dubbo相似
         // 缓存接口的方法
         ReflectCache.putServiceMethodCache(key, providerConfig.getProxyClass());
     }

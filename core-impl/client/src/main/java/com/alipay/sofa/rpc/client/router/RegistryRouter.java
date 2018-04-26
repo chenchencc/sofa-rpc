@@ -62,7 +62,7 @@ public class RegistryRouter extends Router {
         // 不是直连，且从注册中心订阅配置
         return StringUtils.isEmpty(consumerConfig.getDirectUrl()) && consumerConfig.isSubscribe();
     }
-
+    //去注册中心获取所有的Provider
     @Override
     public List<ProviderInfo> route(SofaRequest request, List<ProviderInfo> providerInfos) {
         AddressHolder addressHolder = consumerBootstrap.getCluster().getAddressHolder();

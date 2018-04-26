@@ -80,7 +80,7 @@ public class FilterChain implements Invoker {
                 if (autoActive != null) {
                     String alias = extensionClass.getAlias();
                     if (autoActive.providerSide()) {
-                        PROVIDER_AUTO_ACTIVES.put(alias, extensionClass);
+                        PROVIDER_AUTO_ACTIVES.put(alias, extensionClass);//
                     } else if (autoActive.consumerSide()) {
                         CONSUMER_AUTO_ACTIVES.put(alias, extensionClass);
                     }

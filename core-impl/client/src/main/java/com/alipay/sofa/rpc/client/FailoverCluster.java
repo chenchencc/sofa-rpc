@@ -61,7 +61,7 @@ public class FailoverCluster extends AbstractCluster {
         SofaRpcException throwable = null;// 异常日志
         List<ProviderInfo> invokedProviderInfos = new ArrayList<ProviderInfo>(retries + 1);
         do {
-            ProviderInfo providerInfo = select(request, invokedProviderInfos);
+            ProviderInfo providerInfo = select(request, invokedProviderInfos);//从所有的Provider中选择一个
             try {
                 SofaResponse response = filterChain(providerInfo, request);
                 if (response != null) {

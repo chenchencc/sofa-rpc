@@ -68,7 +68,7 @@ public class ExtensionLoader<T> {
     /**
      * 全部的加载的实现类 {"alias":ExtensionClass}
      */
-    protected final ConcurrentHashMap<String, ExtensionClass<T>> all;
+    protected final ConcurrentHashMap<String, ExtensionClass<T>> all;//ExtensionLoader加载的所有类的实例都会缓存在这里
 
     /**
      * 如果是单例，那么factory不为空
@@ -134,7 +134,7 @@ public class ExtensionLoader<T> {
 
         this.factory = extensible.singleton() ? new ConcurrentHashMap<String, T>() : null;
         this.all = new ConcurrentHashMap<String, ExtensionClass<T>>();//@extension注解接口对应的实现类
-        if (autoLoad) {
+        if (autoLoad) {//自动加载
             List<String> paths = RpcConfigs.getListValue(RpcOptions.EXTENSION_LOAD_PATH);//
             for (String path : paths) {
                 loadFromFile(path);//从文件中获取实现类
@@ -337,7 +337,7 @@ public class ExtensionLoader<T> {
                     }
                 }
             }
-
+            //加载成功之后会调用监听器
             loadSuccess(alias, extensionClass);
         }
     }
@@ -390,9 +390,9 @@ public class ExtensionLoader<T> {
         int i = line.indexOf('=');
         if (i > 0) {
             alias = line.substring(0, i).trim(); // 以代码里的为准
-            className = line.substring(i + 1).trim();
+            className = line.substring(i + 1).trim();//获取实现类
         } else {
-            className = line;
+            className = line;//实现类
         }
         if (className.length() == 0) {
             return null;

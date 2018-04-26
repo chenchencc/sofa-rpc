@@ -45,7 +45,7 @@ public class ZookeeperRegistryHelper {
 
     /**
      * Convert provider to url.
-     *
+     * 将ProviderConfig的配置转换成URL URL demo：bolt://172.18.141.94:22101?uniqueId=&version=1.0&timeout=0&delay=-1&id=rpc-cfg-0&dynamic=true&weight=100&accepts=100000&startTime=1524483445201&pid=51536&language=java&rpcVer=50301
      * @param providerConfig the ProviderConfig
      * @return the url list
      */
@@ -59,7 +59,7 @@ public class ZookeeperRegistryHelper {
                 if (host == null) {
                     host = server.getHost();
                     if (NetUtils.isLocalHost(host) || NetUtils.isAnyHost(host)) {
-                        host = SystemInfo.getLocalHost();
+                        host = SystemInfo.getLocalHost();//获取本地的IP
                     }
                 }
                 sb.append(server.getProtocol()).append("://").append(host)
@@ -170,7 +170,7 @@ public class ZookeeperRegistryHelper {
         // byte[] data = childData.getData();
         return ProviderInfo.valueOf(url);
     }
-
+    // Provider path=rootPath+"sofa-rpc/"+interface+"/providers" 服务提供者的目录
     static String buildProviderPath(String rootPath, AbstractInterfaceConfig config) {
         return rootPath + "sofa-rpc/" + config.getInterfaceId() + "/providers";
     }

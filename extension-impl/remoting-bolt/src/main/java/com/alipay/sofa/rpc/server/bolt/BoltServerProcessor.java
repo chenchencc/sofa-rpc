@@ -54,7 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Bolt server processor of bolt server. 
- *
+ * Bolt协议的Server request处理器
  * @author <a href="mailto:zhanggeng.zg@antfin.com">GengZhang</a>
  */
 public class BoltServerProcessor extends AsyncUserProcessor<SofaRequest> {

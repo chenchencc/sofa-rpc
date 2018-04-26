@@ -66,11 +66,11 @@ public class DefaultClientProxyInvoker extends ClientProxyInvoker {
         super(bootstrap);
         cacheCommonData();
     }
-
+    //缓存公共数据
     private void cacheCommonData() {
         // 缓存数据
-        this.serviceName = ConfigUniqueNameGenerator.getUniqueName(consumerConfig);
-        this.serializeType = parseSerializeType(consumerConfig.getSerialization());
+        this.serviceName = ConfigUniqueNameGenerator.getUniqueName(consumerConfig);//interface name
+        this.serializeType = parseSerializeType(consumerConfig.getSerialization());//序列化类型
     }
 
     private Byte parseSerializeType(String serialization) {
@@ -94,10 +94,10 @@ public class DefaultClientProxyInvoker extends ClientProxyInvoker {
         super.decorateRequest(request);
 
         // 缓存是为了加快速度
-        request.setTargetServiceUniqueName(serviceName);
-        request.setSerializeType(serializeType);
+        request.setTargetServiceUniqueName(serviceName);//interface name
+        request.setSerializeType(serializeType);//序列化类型
 
-        if (!consumerConfig.isGeneric()) {
+        if (!consumerConfig.isGeneric()) {//泛化调用
             // 找到调用类型， generic的时候类型在filter里进行判断
             request.setInvokeType(consumerConfig.getMethodInvokeType(request.getMethodName()));
         }

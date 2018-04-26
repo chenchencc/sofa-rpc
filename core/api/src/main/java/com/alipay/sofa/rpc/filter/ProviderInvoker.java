@@ -66,14 +66,14 @@ public class ProviderInvoker<T> extends FilterInvoker {
            context.setAttachments(params);
         }*/
 
-        SofaResponse sofaResponse = new SofaResponse();
+        SofaResponse sofaResponse = new SofaResponse();//构建一个RPC的response
         long startTime = RpcRuntimeContext.now();
         try {
             // 反射 真正调用业务代码
             Method method = request.getMethod();
             if (method == null) {
                 throw new SofaRpcException(RpcErrorType.SERVER_FILTER, "Need decode method first!");
-            }
+            }//RPC
             Object result = method.invoke(providerConfig.getRef(), request.getMethodArgs());
 
             sofaResponse.setAppResponse(result);

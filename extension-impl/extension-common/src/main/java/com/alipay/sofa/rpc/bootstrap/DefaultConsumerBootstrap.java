@@ -96,7 +96,7 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
      * 发布的调用者配置（含计数器）
      */
     protected final static ConcurrentHashMap<String, AtomicInteger> REFERRED_KEYS = new ConcurrentHashMap<String, AtomicInteger>();
-
+    //服务的引用
     @Override
     public T refer() {
         if (proxyIns != null) {
@@ -106,7 +106,7 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
             if (proxyIns != null) {
                 return proxyIns;
             }
-            String key = consumerConfig.buildKey();
+            String key = consumerConfig.buildKey();//protocol + "://" + interfaceId + ":" + uniqueId;
             String appName = consumerConfig.getAppName();
             // 检查参数
             checkParameters();
@@ -141,12 +141,12 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
 
             try {
                 // build cluster
-                cluster = ClusterFactory.getCluster(this);
+                cluster = ClusterFactory.getCluster(this);//根据消费者配置获取一个集群（）
                 // build listeners
                 consumerConfig.setConfigListener(buildConfigListener(this));
                 consumerConfig.setProviderInfoListener(buildProviderInfoListener(this));
                 // init cluster
-                cluster.init();
+                cluster.init();//创建ZK client，创建与ZK server的链接，订阅需要的服务并获取服务列表，往consumer中写入消费端的信息
                 // 构造Invoker对象（执行链）
                 proxyInvoker = buildClientProxyInvoker(this);
                 // 创建代理类
@@ -246,16 +246,16 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
     @Override
     public List<ProviderGroup> subscribe() {
         List<ProviderGroup> result = null;
-        String directUrl = consumerConfig.getDirectUrl();
+        String directUrl = consumerConfig.getDirectUrl();//通过消费者配置获取直连地址
         if (StringUtils.isNotEmpty(directUrl)) {
             // 如果走直连
             result = subscribeFromDirectUrl(directUrl);
         } else {
             // 没有配置url直连
-            List<RegistryConfig> registryConfigs = consumerConfig.getRegistry();
+            List<RegistryConfig> registryConfigs = consumerConfig.getRegistry();//获取注册中心配置
             if (CommonUtils.isNotEmpty(registryConfigs)) {
                 // 从多个注册中心订阅服务列表
-                result = subscribeFromRegistries();
+                result = subscribeFromRegistries();//先订阅然后再注册中心获取订阅数据
             }
         }
         return result;
@@ -305,7 +305,7 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
      */
     protected List<ProviderGroup> subscribeFromRegistries() {
         List<ProviderGroup> result = new ArrayList<ProviderGroup>();
-        List<RegistryConfig> registryConfigs = consumerConfig.getRegistry();
+        List<RegistryConfig> registryConfigs = consumerConfig.getRegistry();//获取注册中心配置
         if (CommonUtils.isEmpty(registryConfigs)) {
             return result;
         }
@@ -320,10 +320,10 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
 
         // 从注册中心订阅 {groupName: ProviderGroup}
         Map<String, ProviderGroup> tmpProviderInfoList = new HashMap<String, ProviderGroup>();
-        for (RegistryConfig registryConfig : registryConfigs) {
+        for (RegistryConfig registryConfig : registryConfigs) {//遍历所有的注册配置，根据注册配置获取配置中心
             Registry registry = RegistryFactory.getRegistry(registryConfig);
-            registry.init();
-            registry.start();
+            registry.init();//创建ZK client
+            registry.start();//创建ZK client的链接
 
             try {
                 List<ProviderGroup> current;
@@ -332,7 +332,7 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
                         consumerConfig.setProviderInfoListener(new WrapperClusterProviderInfoListener(listener,
                             respondRegistries));
                     }
-                    current = registry.subscribe(consumerConfig);
+                    current = registry.subscribe(consumerConfig);//从服务注册中心获取服务分组的提供者列表  TODO重点
                 } finally {
                     if (respondRegistries != null) {
                         consumerConfig.setProviderInfoListener(listener);
@@ -345,7 +345,7 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
                         respondRegistries.countDown();
                     }
                 }
-                for (ProviderGroup group : current) { //  当前注册中心的
+                for (ProviderGroup group : current) { //  遍历当前从注册中心获取的服务分组
                     String groupName = group.getName();
                     if (!group.isEmpty()) {
                         ProviderGroup oldGroup = tmpProviderInfoList.get(groupName);

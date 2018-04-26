@@ -32,14 +32,14 @@ public class ClusterFactory {
 
     /**
      * 构造Client对象
-     *
+     * 根据ConsumerBootstrap获取一个集群
      * @param consumerBootstrap 客户端配置
      * @return Client对象
      */
     public static Cluster getCluster(ConsumerBootstrap consumerBootstrap) {
         try {
-            ConsumerConfig consumerConfig = consumerBootstrap.getConsumerConfig();
-            ExtensionClass<Cluster> ext = ExtensionLoaderFactory.getExtensionLoader(Cluster.class)
+            ConsumerConfig consumerConfig = consumerBootstrap.getConsumerConfig();//获取消费者配置类型
+            ExtensionClass<Cluster> ext = ExtensionLoaderFactory.getExtensionLoader(Cluster.class)//获取一个集群，默认是failover失败重试
                 .getExtensionClass(consumerConfig.getCluster());
             if (ext == null) {
                 throw ExceptionUtils.buildRuntime("consumer.cluster",

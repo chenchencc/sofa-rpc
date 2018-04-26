@@ -48,6 +48,6 @@ public class HelloServiceImpl implements HelloService {
             } catch (Exception ignore) {
             }
         }
-        return result != null ? result : "hello " + name + " from server! age: " + age;
+        return "name:" + name + ", age:" + age+"------->server";
     }
 }

@@ -50,7 +50,7 @@ public final class ServerFactory {
     /**
      * 全部服务端
      */
-    private final static ConcurrentHashMap<String, Server> SERVER_MAP = new ConcurrentHashMap<String, Server>();
+    private final static ConcurrentHashMap<String, Server> SERVER_MAP = new ConcurrentHashMap<String, Server>();//保存着所有的Server，没有的话则创建一个，端口和对应的Server映射关系
 
     /**
      * 初始化Server实例
@@ -59,20 +59,20 @@ public final class ServerFactory {
      * @return Server
      */
     public synchronized static Server getServer(ServerConfig serverConfig) {
-        try {
-            Server server = SERVER_MAP.get(Integer.toString(serverConfig.getPort()));
+        try {//Server默认端口是22101
+            Server server = SERVER_MAP.get(Integer.toString(serverConfig.getPort()));//通过端口获取一个Server
             if (server == null) {
-                // 算下网卡和端口
+                // 算下网卡和端口，解析server config
                 resolveServerConfig(serverConfig);
 
                 ExtensionClass<Server> ext = ExtensionLoaderFactory.getExtensionLoader(Server.class)
-                    .getExtensionClass(serverConfig.getProtocol());
+                    .getExtensionClass(serverConfig.getProtocol());//根据协议获取一个Server,默认是BoltServer
                 if (ext == null) {
                     throw ExceptionUtils.buildRuntime("server.protocol", serverConfig.getProtocol(),
                         "Unsupported protocol of server!");
                 }
                 server = ext.getExtInstance();
-                server.init(serverConfig);
+                server.init(serverConfig);//server初始化
                 SERVER_MAP.put(serverConfig.getPort() + "", server);
             }
             return server;
@@ -90,18 +90,18 @@ public final class ServerFactory {
      */
     private static void resolveServerConfig(ServerConfig serverConfig) {
         // 绑定到指定网卡 或全部网卡
-        String boundHost = serverConfig.getBoundHost();
+        String boundHost = serverConfig.getBoundHost();//获取绑定的host
         if (boundHost == null) {
-            String host = serverConfig.getHost();
+            String host = serverConfig.getHost();//获取host
             if (StringUtils.isBlank(host)) {
-                host = SystemInfo.getLocalHost();
+                host = SystemInfo.getLocalHost();//获取本地的
                 serverConfig.setHost(host);
                 // windows绑定到0.0.0.0的某个端口以后，其它进程还能绑定到该端口
                 boundHost = SystemInfo.isWindows() ? host : NetUtils.ANYHOST;
             } else {
                 boundHost = host;
             }
-            serverConfig.setBoundHost(boundHost);
+            serverConfig.setBoundHost(boundHost);//bind the host
         }
 
         // 绑定的端口

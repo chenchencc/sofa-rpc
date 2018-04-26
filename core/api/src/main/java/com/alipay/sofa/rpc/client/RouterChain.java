@@ -147,7 +147,7 @@ public class RouterChain {
         }
         // 解析自动加载的router
         if (!excludes.contains(StringUtils.ALL) && !excludes.contains(StringUtils.DEFAULT)) { // 配了-*和-default表示不加载内置
-            for (Map.Entry<String, ExtensionClass<Router>> entry : CONSUMER_AUTO_ACTIVES.entrySet()) {
+            for (Map.Entry<String, ExtensionClass<Router>> entry : CONSUMER_AUTO_ACTIVES.entrySet()) {//RegistryRouter、DirectRouter
                 if (!excludes.contains(entry.getKey())) {
                     extensionRouters.add(entry.getValue());
                 }

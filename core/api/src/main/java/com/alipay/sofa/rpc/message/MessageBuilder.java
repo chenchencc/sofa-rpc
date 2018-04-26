@@ -58,8 +58,8 @@ public class MessageBuilder {
      */
     public static SofaRequest buildSofaRequest(Class<?> clazz, Method method, Class[] argTypes, Object[] args) {
         SofaRequest request = new SofaRequest();
-        request.setInterfaceName(clazz.getName());
-        request.setMethodName(method.getName());
+        request.setInterfaceName(clazz.getName());// class name
+        request.setMethodName(method.getName());//服务方法名称
         request.setMethod(method);
         request.setMethodArgs(args == null ? new Object[0] : args);
         request.setMethodArgSigs(ClassTypeUtils.getTypeStrs(argTypes, true));

@@ -120,7 +120,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
     /**
      * 默认序列化
      */
-    protected String                                 serialization    = getStringValue(DEFAULT_SERIALIZATION);
+    protected String                                 serialization    = getStringValue(DEFAULT_SERIALIZATION);//默认的序列化类型是hessian2
 
     /**
      * 是否注册，如果是false只订阅不注册
@@ -135,7 +135,7 @@ public abstract class AbstractInterfaceConfig<T, S extends AbstractInterfaceConf
     /**
      * 代理类型
      */
-    protected String                                 proxy            = getStringValue(DEFAULT_PROXY);
+    protected String                                 proxy            = getStringValue(DEFAULT_PROXY);//默认代理方式是jdk
 
     /**
      * 服务分组：不做为服务唯一标识

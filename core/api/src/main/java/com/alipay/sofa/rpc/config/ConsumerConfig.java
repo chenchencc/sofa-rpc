@@ -254,7 +254,7 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
         if (proxyClass != null) {
             return proxyClass;
         }
-        if (generic) {
+        if (generic) {//泛化调用
             return GenericService.class;
         }
         try {
@@ -922,9 +922,9 @@ public class ConsumerConfig<T> extends AbstractInterfaceConfig<T, ConsumerConfig
      */
     public T refer() {
         if (consumerBootstrap == null) {
-            consumerBootstrap = Bootstraps.from(this);
+            consumerBootstrap = Bootstraps.from(this);//获取一个ConsumerBootstrap
         }
-        return consumerBootstrap.refer();
+        return consumerBootstrap.refer();//引用服务，主要就是创建一个Proxy
     }
 
     /**

@@ -97,7 +97,7 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
             doExport();
         }
     }
-
+    //暴露服务主要是为了给我provider创建Server、Request handler、ProxyInvoker
     private void doExport() {
         if (exported) {
             return;
@@ -135,25 +135,25 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
         }
 
         try {
-            // 构造请求调用器
+            // 构造请求调用器链
             providerProxyInvoker = new ProviderProxyInvoker(providerConfig);
             // 初始化注册中心
             if (providerConfig.isRegister()) {
                 List<RegistryConfig> registryConfigs = providerConfig.getRegistry();//获取注册中心配置
                 if (CommonUtils.isNotEmpty(registryConfigs)) {
                     for (RegistryConfig registryConfig : registryConfigs) {
-                        RegistryFactory.getRegistry(registryConfig); // 提前初始化Registry
+                        RegistryFactory.getRegistry(registryConfig); // 根据注册配置获取一个Registry，没有则根据RegistryConfig初始化一个
                     }
                 }
             }
             // 将处理器注册到server
             List<ServerConfig> serverConfigs = providerConfig.getServer();//获取server
-            for (ServerConfig serverConfig : serverConfigs) {
+            for (ServerConfig serverConfig : serverConfigs) {//遍历所有的server配置
                 try {
-                    Server server = serverConfig.buildIfAbsent();
-                    // 注册序列化接口
+                    Server server = serverConfig.buildIfAbsent();//创建一个Server
+                    //注册提供者代理接口
                     server.registerProcessor(providerConfig, providerProxyInvoker);
-                    if (serverConfig.isAutoStart()) {
+                    if (serverConfig.isAutoStart()) {//server start
                         server.start();
                     }
                 } catch (SofaRpcRuntimeException e) {
@@ -165,7 +165,7 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
             }
 
             // 注册到注册中心
-            providerConfig.setConfigListener(new ProviderAttributeListener());
+            providerConfig.setConfigListener(new ProviderAttributeListener());//provider注册一个配置监听器
             register();
         } catch (Exception e) {
             cnt.decrementAndGet();
@@ -287,15 +287,15 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
      * 订阅服务列表
      */
     protected void register() {
-        if (providerConfig.isRegister()) {
-            List<RegistryConfig> registryConfigs = providerConfig.getRegistry();
+        if (providerConfig.isRegister()) {//是否有注册器
+            List<RegistryConfig> registryConfigs = providerConfig.getRegistry();//获取所有的provider的配置
             if (registryConfigs != null) {
                 for (RegistryConfig registryConfig : registryConfigs) {
-                    Registry registry = RegistryFactory.getRegistry(registryConfig);
-                    registry.init();
+                    Registry registry = RegistryFactory.getRegistry(registryConfig);//根据注册中心配置获取Registry
+                    registry.init();//加载配置并初始化ZK Client
                     registry.start();
                     try {
-                        registry.register(providerConfig);
+                        registry.register(providerConfig);//注册服务，provider+config这两种配置
                     } catch (SofaRpcRuntimeException e) {
                         throw e;
                     } catch (Throwable e) {

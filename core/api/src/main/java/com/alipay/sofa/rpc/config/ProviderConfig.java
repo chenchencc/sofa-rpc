@@ -146,7 +146,7 @@ public class ProviderConfig<T> extends AbstractInterfaceConfig<T, ProviderConfig
     protected transient ProviderBootstrap                           providerBootstrap;
 
     /**
-     * Gets proxy class.
+     * Gets proxy class.  获取代理类没有则创建一个
      *
      * @return the proxyClass
      */

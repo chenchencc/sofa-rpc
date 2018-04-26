@@ -77,7 +77,7 @@ public class RpcRuntimeContext {
     /**
      * 发布的服务配置
      */
-    private final static ConcurrentHashSet<ProviderBootstrap> EXPORTED_PROVIDER_CONFIGS = new ConcurrentHashSet<ProviderBootstrap>();
+    private final static ConcurrentHashSet<ProviderBootstrap> EXPORTED_PROVIDER_CONFIGS = new ConcurrentHashSet<ProviderBootstrap>();//已发布的服务的配置
 
     /**
      * 发布的订阅配置

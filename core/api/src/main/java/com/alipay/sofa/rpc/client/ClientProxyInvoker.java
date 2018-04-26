@@ -71,7 +71,7 @@ public class ClientProxyInvoker implements Invoker {
         try {
             RpcInternalContext.pushContext();
             RpcInternalContext context = RpcInternalContext.getContext();
-            context.setProviderSide(false);
+            context.setProviderSide(false);//消费端
             // 包装请求
             decorateRequest(request);
             try {

@@ -31,11 +31,11 @@ public class SofaRpcSerializationRegister {
 
     public static void registerCustomSerializer() {
         // 注册序列化器到bolt
-        if (CustomSerializerManager.getCustomSerializer(SofaRequest.class.getName()) == null) {
+        if (CustomSerializerManager.getCustomSerializer(SofaRequest.class.getName()) == null) {//获取request的序列化器
             CustomSerializerManager.registerCustomSerializer(SofaRequest.class.getName(),
                 RPC_SERIALIZATION);
         }
-        if (CustomSerializerManager.getCustomSerializer(SofaResponse.class.getName()) == null) {
+        if (CustomSerializerManager.getCustomSerializer(SofaResponse.class.getName()) == null) {//获取response的序列化器
             CustomSerializerManager.registerCustomSerializer(SofaResponse.class.getName(),
                 RPC_SERIALIZATION);
         }

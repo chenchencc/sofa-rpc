@@ -48,7 +48,7 @@ public class ProviderProxyInvoker implements Invoker {
      */
     public ProviderProxyInvoker(ProviderConfig providerConfig) {
         this.providerConfig = providerConfig;
-        // 最底层是调用过滤器
+        // 最底层是调用过滤器  根据provider config构建一个过滤器链，@AutoActive注解修饰的类
         this.filterChain = FilterChain.buildProviderChain(providerConfig,
             new ProviderInvoker(providerConfig));
     }

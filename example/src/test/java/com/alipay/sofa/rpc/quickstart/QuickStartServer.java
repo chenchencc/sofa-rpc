@@ -35,6 +35,7 @@ public class QuickStartServer {
             .setRef(new HelloServiceImpl()) // 指定实现
             .setServer(serverConfig); // 指定服务端
 
+
         providerConfig.export(); // 发布服务
     }
 }

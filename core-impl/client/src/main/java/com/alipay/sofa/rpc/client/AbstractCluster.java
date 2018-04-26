@@ -111,7 +111,7 @@ public abstract class AbstractCluster extends Cluster {
      * 过滤器链
      */
     protected FilterChain      filterChain;
-
+    //集群初始化
     @Override
     public synchronized void init() {
         if (initialized) { // 已初始化
@@ -139,7 +139,7 @@ public abstract class AbstractCluster extends Cluster {
         connectionHolder.init();
         try {
             // 得到服务端列表
-            List<ProviderGroup> all = consumerBootstrap.subscribe();
+            List<ProviderGroup> all = consumerBootstrap.subscribe();//get all provider
             if (CommonUtils.isNotEmpty(all)) {
                 // 初始化服务端连接（建立长连接)
                 updateAllProviders(all);
@@ -165,7 +165,7 @@ public abstract class AbstractCluster extends Cluster {
      * 检测状态
      */
     protected void checkClusterState() {
-        if (destroyed) { // 已销毁
+        if (destroyed) { // 已销毁，集群状态检查
             throw new SofaRpcRuntimeException("Client has been destroyed!");
         }
         if (!initialized) { // 未初始化

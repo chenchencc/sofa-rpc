@@ -54,23 +54,23 @@ public class ZookeeperBoltClientMain {
 
         ConsumerConfig<HelloService> consumerConfig = new ConsumerConfig<HelloService>()
             .setInterfaceId(HelloService.class.getName())
-            .setRegistry(registryConfig)
-            .setTimeout(3000);
+            .setRegistry(registryConfig);
+            //.setTimeout();
         HelloService helloService = consumerConfig.refer();
 
-        ConsumerConfig<EchoService> consumerConfig2 = new ConsumerConfig<EchoService>()
+        /*ConsumerConfig<EchoService> consumerConfig2 = new ConsumerConfig<EchoService>()
             .setInterfaceId(EchoService.class.getName())
             .setRegistry(registryConfig)
             .setTimeout(3000);
         EchoService echoService = consumerConfig2.refer();
-
+*/
         LOGGER.warn("started at pid {}", RpcRuntimeContext.PID);
 
         try {
             while (true) {
                 try {
-                    String s = helloService.sayHello("xxx", 22);
-                    LOGGER.warn("{}", s);
+                    String s = helloService.sayHello("Jason", 22);
+                    System.out.println(s+"-----");
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);
                 }

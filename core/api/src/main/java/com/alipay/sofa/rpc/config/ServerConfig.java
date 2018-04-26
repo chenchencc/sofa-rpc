@@ -207,7 +207,7 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
     /**
      * 服务端对象
      */
-    private transient volatile Server         server;
+    private transient volatile Server         server;//根据Server配置创建一个Server
 
     /**
      * 绑定的地址。是某个网卡，还是全部地址
@@ -227,7 +227,7 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
         // ConfigValueHelper.check(ProtocolType.valueOf(getProtocol()),
         //                SerializationType.valueOf(getSerialization()));
 
-        server = ServerFactory.getServer(this);
+        server = ServerFactory.getServer(this);//通过serverConfig获取一个Server
         return server;
     }
 
@@ -242,7 +242,7 @@ public class ServerConfig extends AbstractIdConfig implements Serializable {
 
     /**
      * Gets protocol.
-     *
+     * 默认协议是bolt协议
      * @return the protocol
      */
     public String getProtocol() {

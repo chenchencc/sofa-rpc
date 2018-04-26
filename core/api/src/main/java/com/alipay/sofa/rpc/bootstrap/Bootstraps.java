@@ -28,7 +28,7 @@ import com.alipay.sofa.rpc.ext.ExtensionLoaderFactory;
 public class Bootstraps {
 
     /**
-     * 发布一个服务
+     *
      *
      * @param providerConfig 服务发布者配置
      * @param <T>            接口类型
@@ -43,7 +43,7 @@ public class Bootstraps {
     }
 
     /**
-     * 引用一个服务
+     * 通过SPI机制获取一个ChannelInboundHandlerAdapter
      *
      * @param consumerConfig 服务消费者配置
      * @param <T>            接口类型

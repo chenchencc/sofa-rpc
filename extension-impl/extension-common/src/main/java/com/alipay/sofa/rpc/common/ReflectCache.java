@@ -114,7 +114,7 @@ public class ReflectCache {
             }
             publicMethods.put(mSigs.toString(), m);
         }
-        METHOD_CACHE.put(serviceUniqueName, publicMethods);
+        METHOD_CACHE.put(serviceUniqueName, publicMethods);//缓存interface下所有的方法
     }
 
     /**

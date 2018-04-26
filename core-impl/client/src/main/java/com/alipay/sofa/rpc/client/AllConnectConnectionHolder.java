@@ -781,7 +781,7 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
      * 启动重连+心跳线程
      */
     protected void startReconnectThread() {
-        final String interfaceId = consumerConfig.getInterfaceId();
+        final String interfaceId = consumerConfig.getInterfaceId();//interface
         // 启动线程池
         // 默认每隔10秒重连
         int reconnect = consumerConfig.getReconnectPeriod();
@@ -792,7 +792,7 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
                     @Override
                     public void run() {
                         try {
-                            doReconnect();
+                            doReconnect();//重新连接
                         } catch (Throwable e) {
                             LOGGER.errorWithApp(consumerConfig.getAppName(),
                                 "Exception when retry connect to provider", e);

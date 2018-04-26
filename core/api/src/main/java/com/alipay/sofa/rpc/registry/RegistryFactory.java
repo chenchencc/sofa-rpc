@@ -60,17 +60,17 @@ public class RegistryFactory {
             }
         }
         try {
-            // 注意：RegistryConfig重写了equals方法，如果多个RegistryConfig属性一样，则认为是一个对象
+            // 注意：RegistryConfig重写了equals方法，如果多个RegistryConfig属性一样，则认为是一个对象,ALL_REGISTRIES存放所有的注册中心配置
             Registry registry = ALL_REGISTRIES.get(registryConfig);
             if (registry == null) {
                 ExtensionClass<Registry> ext = ExtensionLoaderFactory.getExtensionLoader(Registry.class)
-                    .getExtensionClass(registryConfig.getProtocol());
+                    .getExtensionClass(registryConfig.getProtocol());//通过SPI机制获取一个
                 if (ext == null) {
                     throw ExceptionUtils.buildRuntime("registry.protocol", registryConfig.getProtocol(),
                         "Unsupported protocol of registry config !");
                 }
                 registry = ext.getExtInstance(new Class[] { RegistryConfig.class }, new Object[] { registryConfig });
-                ALL_REGISTRIES.put(registryConfig, registry);
+                ALL_REGISTRIES.put(registryConfig, registry);//将注册中心的配置和注册中心绑定
             }
             return registry;
         } catch (SofaRpcRuntimeException e) {
