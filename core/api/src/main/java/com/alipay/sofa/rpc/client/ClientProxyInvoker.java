@@ -80,7 +80,7 @@ public class ClientProxyInvoker implements Invoker {
                     EventBus.post(new ClientStartInvokeEvent(request));
                 }
                 // 得到结果
-                response = cluster.invoke(request);
+                response = cluster.invoke(request);//TODO 走集群
             } catch (SofaRpcException e) {
                 throwable = e;
                 throw e;

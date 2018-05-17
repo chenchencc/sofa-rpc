@@ -255,7 +255,7 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
             List<RegistryConfig> registryConfigs = consumerConfig.getRegistry();//获取注册中心配置
             if (CommonUtils.isNotEmpty(registryConfigs)) {
                 // 从多个注册中心订阅服务列表
-                result = subscribeFromRegistries();//先订阅然后再注册中心获取订阅数据
+                result = subscribeFromRegistries();//先订阅然后再注册中心获取订阅数据   获取消费者需要的服务提供者，不是所有的服务
             }
         }
         return result;
@@ -331,8 +331,8 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
                     if (respondRegistries != null) {
                         consumerConfig.setProviderInfoListener(new WrapperClusterProviderInfoListener(listener,
                             respondRegistries));
-                    }
-                    current = registry.subscribe(consumerConfig);//从服务注册中心获取服务分组的提供者列表  TODO重点
+                    }//只订阅自己需要的服务，不是所有的服务
+                    current = registry.subscribe(consumerConfig);//从服务注册中心获取服务分组的提供者列表  TODO重点  会返回一个默认名称为_DEFAULT的服务提供分组
                 } finally {
                     if (respondRegistries != null) {
                         consumerConfig.setProviderInfoListener(listener);
@@ -432,7 +432,7 @@ public class DefaultConsumerBootstrap<T> extends ConsumerBootstrap<T> {
         }
 
         @Override
-        public void addProvider(ProviderGroup group) {
+        public void addProvider(ProviderGroup group) {//TODO
             providerInfoListener.addProvider(group);
             doCountDown();
         }

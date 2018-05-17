@@ -77,7 +77,7 @@ public class RpcReferenceContextFilter extends Filter {
 
         RpcInvokeContext.getContext().put(RemotingConstants.INVOKE_CTX_RPC_REF_CTX, referenceCtx);
 
-        SofaResponse response = invoker.invoke(request);
+        SofaResponse response = invoker.invoke(request);//TODO
 
         // 调用后
         InetSocketAddress local = context.getLocalAddress();

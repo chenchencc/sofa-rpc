@@ -71,7 +71,7 @@ public final class ServerFactory {
                     throw ExceptionUtils.buildRuntime("server.protocol", serverConfig.getProtocol(),
                         "Unsupported protocol of server!");
                 }
-                server = ext.getExtInstance();
+                server = ext.getExtInstance();//获取一个Bolt协议的BoltServer的实例
                 server.init(serverConfig);//server初始化
                 SERVER_MAP.put(serverConfig.getPort() + "", server);
             }

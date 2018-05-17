@@ -56,7 +56,7 @@ public class ZookeeperBoltClientMain {
             .setInterfaceId(HelloService.class.getName())
             .setRegistry(registryConfig);
             //.setTimeout();
-        HelloService helloService = consumerConfig.refer();
+        HelloService helloService = consumerConfig.refer();//创建代理
 
         /*ConsumerConfig<EchoService> consumerConfig2 = new ConsumerConfig<EchoService>()
             .setInterfaceId(EchoService.class.getName())
@@ -69,7 +69,7 @@ public class ZookeeperBoltClientMain {
         try {
             while (true) {
                 try {
-                    String s = helloService.sayHello("Jason", 22);
+                    String s = helloService.sayHello("Jason", 22);//寻找服务、发送远程请求
                     System.out.println(s+"-----");
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(), e);

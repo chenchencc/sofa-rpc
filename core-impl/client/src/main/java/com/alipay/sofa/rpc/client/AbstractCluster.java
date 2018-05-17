@@ -57,7 +57,7 @@ import static com.alipay.sofa.rpc.common.RpcOptions.CONSUMER_INVOKE_TIMEOUT;
 
 /**
  * Abstract cluster, contains router chain, filter chain, address holder, connection holder and load balancer.
- *
+ * 集群含有消费者需要的服务列表
  * @author <a href=mailto:zhanggeng.zg@antfin.com>GengZhang</a>
  */
 public abstract class AbstractCluster extends Cluster {
@@ -118,7 +118,7 @@ public abstract class AbstractCluster extends Cluster {
             return;
         }
         // 构造Router链
-        routerChain = RouterChain.buildConsumerChain(consumerBootstrap);
+        routerChain = RouterChain.buildConsumerChain(consumerBootstrap);//主要是直连Router和注册Router这两种
         // 负载均衡策略 考虑是否可动态替换？
         loadBalancer = LoadBalancerFactory.getLoadBalancer(consumerBootstrap);
         // 地址管理器
@@ -135,14 +135,14 @@ public abstract class AbstractCluster extends Cluster {
             }
         }
 
-        // 启动重连线程
+        // 启动重连线程  心跳动作
         connectionHolder.init();
         try {
             // 得到服务端列表
-            List<ProviderGroup> all = consumerBootstrap.subscribe();//get all provider
+            List<ProviderGroup> all = consumerBootstrap.subscribe();//get all provider  获取关注的服务不是所有的
             if (CommonUtils.isNotEmpty(all)) {
                 // 初始化服务端连接（建立长连接)
-                updateAllProviders(all);
+                updateAllProviders(all);//TODO
             }
         } catch (SofaRpcRuntimeException e) {
             throw e;
@@ -174,7 +174,7 @@ public abstract class AbstractCluster extends Cluster {
     }
 
     @Override
-    public void addProvider(ProviderGroup providerGroup) {
+    public void addProvider(ProviderGroup providerGroup) {//TODO
         // 包装了各个组件的操作
         addressHolder.addProvider(providerGroup);
         connectionHolder.addProvider(providerGroup);
@@ -217,7 +217,7 @@ public abstract class AbstractCluster extends Cluster {
             EventBus.post(event);
         }
     }
-
+    //所有的服务提供者-这些服务是经过分类了的
     @Override
     public void updateAllProviders(List<ProviderGroup> providerGroups) {
         List<ProviderGroup> oldProviderGroups = new ArrayList<ProviderGroup>(addressHolder.getProviderGroups());
@@ -239,8 +239,8 @@ public abstract class AbstractCluster extends Cluster {
                 }
             }
         } else {
-            addressHolder.updateAllProviders(providerGroups);
-            connectionHolder.updateAllProviders(providerGroups);
+            addressHolder.updateAllProviders(providerGroups);//将服务列表进行分组管理
+            connectionHolder.updateAllProviders(providerGroups);//TODO
         }
         if (EventBus.isEnable(ProviderInfoUpdateAllEvent.class)) {
             ProviderInfoUpdateAllEvent event = new ProviderInfoUpdateAllEvent(consumerConfig, oldProviderGroups,
@@ -269,8 +269,8 @@ public abstract class AbstractCluster extends Cluster {
                         consumerConfig.getProtocol(), providerInfo.getProtocolType());
                 }
             }
-            if (StringUtils.isEmpty(providerInfo.getSerializationType())) {
-                providerInfo.setSerializationType(consumerConfig.getSerialization());
+            if (StringUtils.isEmpty(providerInfo.getSerializationType())) {//获取服务提供者的序列化类型
+                providerInfo.setSerializationType(consumerConfig.getSerialization());//设置序列化类型
             }
         }
     }
@@ -371,7 +371,7 @@ public abstract class AbstractCluster extends Cluster {
                 // 指定的不存在
                 throw unavailableProviderException(message.getTargetServiceUniqueName(), targetIP);
             }
-            ClientTransport clientTransport = selectByProvider(message, providerInfo);
+            ClientTransport clientTransport = selectByProvider(message, providerInfo);//TODO important
             if (clientTransport == null) {
                 // 指定的不存在或已死，抛出异常
                 throw unavailableProviderException(message.getTargetServiceUniqueName(), targetIP);
@@ -381,7 +381,7 @@ public abstract class AbstractCluster extends Cluster {
             do {
                 // 再进行负载均衡筛选
                 providerInfo = loadBalancer.select(message, providerInfos);
-                ClientTransport transport = selectByProvider(message, providerInfo);
+                ClientTransport transport = selectByProvider(message, providerInfo);//TODO 非常重要的地方
                 if (transport != null) {
                     return providerInfo;
                 }

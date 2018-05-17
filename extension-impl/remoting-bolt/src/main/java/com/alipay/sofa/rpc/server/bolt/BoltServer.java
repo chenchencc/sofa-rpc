@@ -154,7 +154,7 @@ public class BoltServer implements Server {
     public void registerProcessor(ProviderConfig providerConfig, Invoker instance) {
         // 缓存Invoker对象
         String key = ConfigUniqueNameGenerator.getUniqueName(providerConfig);//默认是interface+version
-        invokerMap.put(key, instance);//与Dubbo相似
+        invokerMap.put(key, instance);//与Dubbo相似 
         // 缓存接口的方法
         ReflectCache.putServiceMethodCache(key, providerConfig.getProxyClass());
     }

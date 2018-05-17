@@ -67,7 +67,7 @@ public class RegistryRouter extends Router {
     public List<ProviderInfo> route(SofaRequest request, List<ProviderInfo> providerInfos) {
         AddressHolder addressHolder = consumerBootstrap.getCluster().getAddressHolder();
         if (addressHolder != null) {
-            List<ProviderInfo> current = addressHolder.getProviderInfos(RpcConstants.ADDRESS_DEFAULT_GROUP);
+            List<ProviderInfo> current = addressHolder.getProviderInfos(RpcConstants.ADDRESS_DEFAULT_GROUP);//通过服务分组名从地址保存器中获取对应的服务列表  TODO
             if (providerInfos != null) {
                 providerInfos.addAll(current);
             } else {

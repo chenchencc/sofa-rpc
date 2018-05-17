@@ -154,7 +154,7 @@ public class DefaultProviderBootstrap<T> extends ProviderBootstrap<T> {
                     //注册提供者代理接口
                     server.registerProcessor(providerConfig, providerProxyInvoker);
                     if (serverConfig.isAutoStart()) {//server start
-                        server.start();
+                        server.start();//启动BOLTServer
                     }
                 } catch (SofaRpcRuntimeException e) {
                     throw e;

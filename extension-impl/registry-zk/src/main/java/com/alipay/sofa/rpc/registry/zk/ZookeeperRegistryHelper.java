@@ -183,11 +183,17 @@ public class ZookeeperRegistryHelper {
         return rootPath + "sofa-rpc/" + config.getInterfaceId() + "/configs";
     }
 
+    /**
+     * 按照协议类型匹配服务提供者
+     * @param consumerConfig
+     * @param providerInfos
+     * @return
+     */
     static List<ProviderInfo> matchProviderInfos(ConsumerConfig consumerConfig, List<ProviderInfo> providerInfos) {
         String protocol = consumerConfig.getProtocol();
         List<ProviderInfo> result = new ArrayList<ProviderInfo>();
         for (ProviderInfo providerInfo : providerInfos) {
-            if (providerInfo.getProtocolType().equalsIgnoreCase(protocol)
+            if (providerInfo.getProtocolType().equalsIgnoreCase(protocol)//判断服务提供者的协议是否和消费者的协议一样
                 && StringUtils.equals(consumerConfig.getUniqueId(),
                     providerInfo.getAttr(ProviderInfoAttrs.ATTR_UNIQUEID))) {
                 result.add(providerInfo);

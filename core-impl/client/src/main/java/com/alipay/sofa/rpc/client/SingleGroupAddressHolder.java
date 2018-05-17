@@ -83,7 +83,7 @@ public class SingleGroupAddressHolder extends AddressHolder {
             rLock.unlock();
         }
     }
-
+    //获取所有的服务提供者分组
     @Override
     public List<ProviderGroup> getProviderGroups() {
         rLock.lock();
@@ -137,14 +137,14 @@ public class SingleGroupAddressHolder extends AddressHolder {
             wLock.unlock();
         }
     }
-
+    //将所有的服务进行分组
     @Override
     public void updateAllProviders(List<ProviderGroup> providerGroups) {
         ConcurrentHashSet<ProviderInfo> tmpDirectUrl = new ConcurrentHashSet<ProviderInfo>();
         ConcurrentHashSet<ProviderInfo> tmpRegistry = new ConcurrentHashSet<ProviderInfo>();
         for (ProviderGroup providerGroup : providerGroups) {
             if (!ProviderHelper.isEmpty(providerGroup)) {
-                if (RpcConstants.ADDRESS_DIRECT_GROUP.equals(providerGroup.getName())) {
+                if (RpcConstants.ADDRESS_DIRECT_GROUP.equals(providerGroup.getName())) {//服务分组分为 _DIRECT 和 _DEFAULT 两种分组
                     tmpDirectUrl.addAll(providerGroup.getProviderInfos());
                 } else {
                     tmpRegistry.addAll(providerGroup.getProviderInfos());

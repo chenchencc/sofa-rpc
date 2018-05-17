@@ -54,6 +54,8 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 全部建立长连接，自动维护长连接
  *
+ * 保存服务提供者的网络传输层的连接
+ *
  * @author <a href=mailto:zhanggeng.zg@antfin.com>GengZhang</a>
  */
 @Extension("all")
@@ -114,7 +116,7 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
     }
 
     /**
-     * Add alive.
+     * Add alive.  存放存活的服务提供者和对应的网络传输层(既可以发送消息)
      *
      * @param providerInfo the provider
      * @param transport    the transport
@@ -127,7 +129,7 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
 
     /**
      * Add retry.
-     *
+     * 重试连接集合中记录服务提供者和对应的网络传输层
      * @param providerInfo the provider
      * @param transport    the transport
      */
@@ -317,6 +319,9 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
         }
     }
 
+    /**
+     * 启动重新连接线程池
+     */
     @Override
     public void init() {
         if (reconThread == null) {
@@ -324,8 +329,12 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
         }
     }
 
+    /**
+     * 添加服务提供者
+     * @param providerGroup 服务端列表组
+     */
     @Override
-    public void addProvider(ProviderGroup providerGroup) {
+    public void addProvider(ProviderGroup providerGroup) {  //TODO
         // 忽略了tags属性
         if (!ProviderHelper.isEmpty(providerGroup)) {
             addNode(providerGroup.getProviderInfos());
@@ -361,7 +370,7 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
                 List<ProviderInfo> needAdd = diff.getOnlyOnLeft(); // 需要新建
                 List<ProviderInfo> needDelete = diff.getOnlyOnRight(); // 需要删掉
                 if (!needAdd.isEmpty()) {
-                    addNode(needAdd);
+                    addNode(needAdd);//TODO
                 }
                 if (!needDelete.isEmpty()) {
                     removeNode(needDelete);
@@ -389,7 +398,7 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
         updateProviders(new ProviderGroup().addAll(mergePs));
     }
 
-    protected void addNode(List<ProviderInfo> providerInfoList) {
+    protected void addNode(List<ProviderInfo> providerInfoList) {//TODO ????
         final String interfaceId = consumerConfig.getInterfaceId();
         int providerSize = providerInfoList.size();
         String appName = consumerConfig.getAppName();
@@ -406,11 +415,11 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
                 new NamedThreadFactory("CLI-CONN-" + interfaceId, true));
             int connectTimeout = consumerConfig.getConnectTimeout();
             for (final ProviderInfo providerInfo : providerInfoList) {
-                final ClientTransportConfig config = providerToClientConfig(providerInfo);
+                final ClientTransportConfig config = providerToClientConfig(providerInfo);//TODO 根据服务提供者创建一个ClientTransportConfig对象
                 initPool.execute(new Runnable() {
                     @Override
                     public void run() {
-                        ClientTransport transport = ClientTransportFactory.getClientTransport(config);
+                        ClientTransport transport = ClientTransportFactory.getClientTransport(config);//TODO 根据ClientTransportConfig获取一个ClientTransport实例
                         if (consumerConfig.isLazy()) {
                             uninitializedConnections.put(providerInfo, transport);
                             latch.countDown();
@@ -436,13 +445,13 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
             }
         }
     }
-
+    //初始化ClientTransport并根据链接结果，将Transport放入不同的集合中
     private void initClientTransport(String interfaceId, ProviderInfo providerInfo, ClientTransport transport) {
         try {
-            transport.connect();
+            transport.connect();//链接
             if (doubleCheck(interfaceId, providerInfo, transport)) {
                 printSuccess(interfaceId, providerInfo, transport);
-                addAlive(providerInfo, transport);
+                addAlive(providerInfo, transport);//添加Transport和Provider的映射关系
             } else {
                 printFailure(interfaceId, providerInfo, transport);
                 addRetry(providerInfo, transport);
@@ -494,7 +503,7 @@ public class AllConnectConnectionHolder extends ConnectionHolder {
                 aliveConnections.isEmpty() ? subHealthConnections : aliveConnections;
         return new ArrayList<ProviderInfo>(map.keySet());
     }
-
+    //获取一个可用的server（服务提供方）
     @Override
     public ClientTransport getAvailableClientTransport(ProviderInfo providerInfo) {
         // 先去存活列表

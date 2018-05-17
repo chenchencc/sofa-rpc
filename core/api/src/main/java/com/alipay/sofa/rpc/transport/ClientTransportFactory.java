@@ -57,7 +57,7 @@ public class ClientTransportFactory {
      * @param config 传输层配置
      * @return 传输层
      */
-    public static ClientTransport getClientTransport(ClientTransportConfig config) {
+    public static ClientTransport getClientTransport(ClientTransportConfig config) {//TODO ????
         return CLIENT_TRANSPORT_HOLDER.getClientTransport(config);
     }
 

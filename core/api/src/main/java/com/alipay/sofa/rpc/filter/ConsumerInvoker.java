@@ -48,7 +48,7 @@ public class ConsumerInvoker extends FilterInvoker {
     }
 
     @Override
-    public SofaResponse invoke(SofaRequest sofaRequest) throws SofaRpcException {
+    public SofaResponse invoke(SofaRequest sofaRequest) throws SofaRpcException {//TODO
         // 设置下服务器应用
         ProviderInfo providerInfo = RpcInternalContext.getContext().getProviderInfo();
         String appName = providerInfo.getStaticAttr(ProviderInfoAttrs.ATTR_APP_NAME);
