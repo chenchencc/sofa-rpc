@@ -109,7 +109,7 @@ public class RouterChain {
     /**
      * 筛选Provider
      *
-     * @param request       本次调用（可以得到类名，方法名，方法参数，参数值等）
+     * @param request       本次调用（可以得到类名，方法名，方法参数，参数值等） 路由有两种结果：一种是直连的，一种是通过注册中心的
      * @param providerInfos providers（<b>当前可用</b>的服务Provider列表）
      * @return 路由匹配的服务Provider列表
      */

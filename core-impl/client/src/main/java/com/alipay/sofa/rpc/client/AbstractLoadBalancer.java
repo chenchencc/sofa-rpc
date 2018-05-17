@@ -39,7 +39,7 @@ public abstract class AbstractLoadBalancer extends LoadBalancer {
     public AbstractLoadBalancer(ConsumerBootstrap consumerBootstrap) {
         super(consumerBootstrap);
     }
-
+    //从一堆Provider中选择一个
     @Override
     public ProviderInfo select(SofaRequest request, List<ProviderInfo> providerInfos) throws SofaRpcException {
         if (providerInfos.size() == 0) {

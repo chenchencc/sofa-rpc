@@ -381,7 +381,7 @@ public abstract class AbstractCluster extends Cluster {
             do {
                 // 再进行负载均衡筛选
                 providerInfo = loadBalancer.select(message, providerInfos);
-                ClientTransport transport = selectByProvider(message, providerInfo);//TODO 非常重要的地方
+                ClientTransport transport = selectByProvider(message, providerInfo);//TODO 非常重要的地方 根据Provider信息去connectionHolder中获取一个Transport
                 if (transport != null) {
                     return providerInfo;
                 }
